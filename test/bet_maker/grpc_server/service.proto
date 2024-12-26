@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package event;
+
+import "google/protobuf/timestamp.proto";
+
+enum EventStatus {
+  EVENT_STATUS_UNSPECIFIED = 0;
+  START_WAITING = 1;
+  IN_PROCESS = 2;
+  WIN_1 = 3;
+  WIN_2 = 4;
+}
+
+message Event {
+  int32 id = 1;
+  double coefficient = 3;
+  google.protobuf.Timestamp deadline = 4;
+  EventStatus status = 5;
+}
+
+message EventExistenceRequest {
+  int32 event_id = 1;
+}
+
+message EventExistenceReply {
+  bool exists = 1;
+}
+
+message GetEventRequest {
+    int32 event_id = 1;
+}
+
+message GetAllEventsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message GetAllEventsResponse {
+  repeated Event events = 1;
+  string next_page_token = 2;
+}
+
+service EventExistenceService {
+  rpc CheckEventExists (EventExistenceRequest) returns (EventExistenceReply);
+  rpc GetEvent (GetEventRequest) returns (Event);
+  rpc GetAllEvents (GetAllEventsRequest) returns (GetAllEventsResponse);
+}
