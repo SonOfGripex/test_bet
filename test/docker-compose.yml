@@ -5,8 +5,8 @@ services:
     build:
       context: ./bet_maker
     ports:
-      - "8000:8000"  # порты для FastAPI
-      - "50052:50051"  # внешний порт на хосте для gRPC сервера
+      - "8000:8000"
+      - "50052:50051"
     depends_on:
       - postgres_bet_maker
       - rabbitmq
