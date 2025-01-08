@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  bet_maker:
+    build:
+      context: ./bet_maker
+    ports:
+      - "8000:8000"
+      - "50052:50051"
+    depends_on:
+      - postgres_bet_maker
+      - rabbitmq
+    environment:
+      DATABASE_URL: postgres://bet_maker_user:bet_maker_password@postgres_bet_maker:5432/bet_maker_db
+      GRPC_SERVER_HOST: "bet_maker:50051"
+
+  line_provider:
+    build:
+      context: ./line_provider
+    ports:
+      - "8001:8001"
+      - "50053:50051"
+    depends_on:
+      - postgres_line_provider
+      - rabbitmq
+    environment:
+      DATABASE_URL: postgres://line_provider_user:line_provider_password@postgres_line_provider:5432/line_provider_db
+      GRPC_SERVER_HOST: "line_provider:50051"
+
+  postgres_bet_maker:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: bet_maker_user
+      POSTGRES_PASSWORD: bet_maker_password
+      POSTGRES_DB: bet_maker_db
+    ports:
+      - "5431:5432"
+
+  postgres_line_provider:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: line_provider_user
+      POSTGRES_PASSWORD: line_provider_password
+      POSTGRES_DB: line_provider_db
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
